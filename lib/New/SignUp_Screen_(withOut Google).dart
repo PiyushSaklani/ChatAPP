@@ -43,18 +43,24 @@ class _SignUpScreen_State extends State<SignUpScreen_> {
 
     if (userExist.exists) {
       log("User already exists!😊");
+      Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => MyApp()), (route) => false);
       // log(_firestore.collection("users").doc("name").get().toString());
     } else {
-      await _firestore.collection("users").doc(userCredential.user!.uid).set({
-        "name": userCredential.user!.displayName,
-        "email": userCredential.user!.email,
-        "image": userCredential.user!.photoURL,
-        "uid": userCredential.user!.uid,
-        "date": DateTime.now(),
-      });
+      // await _firestore.collection("users").doc(userCredential.user!.uid).set({
+      //   "name": userCredential.user!.displayName,
+      //   "email": userCredential.user!.email,
+      //   "image": userCredential.user!.photoURL,
+      //   "uid": userCredential.user!.uid,
+      //   "date": DateTime.now(),
+      // });
     }
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => MyApp()), (route) => false);
+    
+    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => UpdateProfileScreen()));
+    
   }
 
   @override

@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Constants/Constants.dart';
-import 'package:flutter_application_1/Login%20SignUp/GooglesigninComplete_Screen.dart';
+import 'package:flutter_application_1/Login%20SignUp/Update_Profile_Detail(Google).dart';
 import 'package:flutter_application_1/New/SignUp_Screen_(withOut%20Google).dart';
 import 'package:flutter_application_1/Providers/User_Provider.dart';
 import 'package:flutter_application_1/main.dart';
@@ -42,18 +42,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (userExist.exists) {
       log("User already exists!😊");
+      Navigator.pushAndRemoveUntil(context,
+          MaterialPageRoute(builder: (context) => MyApp()), (route) => false);
       // log(_firestore.collection("users").doc("name").get().toString());
     } else {
-      await _firestore.collection("users").doc(userCredential.user!.uid).set({
-        "name": userCredential.user!.displayName,
-        "email": userCredential.user!.email,
-        "image": userCredential.user!.photoURL,
-        "uid": userCredential.user!.uid,
-        "date": DateTime.now(),
-      });
+      Navigator.push(
+          context,
+          (MaterialPageRoute(
+              builder: (context) => Google_UpdateProfileScreen())));
+      // await _firestore.collection("users").doc(userCredential.user!.uid).set({
+      // "name": userCredential.user!.displayName,
+      // "email": userCredential.user!.email,
+      // "image": userCredential.user!.photoURL,
+      // "uid": userCredential.user!.uid,
+      // "date": DateTime.now(),
+      // });
     }
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => MyApp()), (route) => false);
   }
 
   @override
@@ -229,12 +233,8 @@ class _LoginScreenState extends State<LoginScreen> {
               ElevatedButton(
                 onPressed: () async {
                   log("Button Pressed");
-                  // await signInbyGOOGLE();
+                  await signInbyGOOGLE();
                   log("Work Done!😍");
-                  Navigator.push(
-                      context,
-                      (MaterialPageRoute(
-                          builder: (context) => GoogleSigninComplete())));
                 },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(Colors.white),

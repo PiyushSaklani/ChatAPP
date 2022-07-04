@@ -1,61 +1,30 @@
 import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/New/Setup_ProfilePic.dart';
-import 'package:flutter_application_1/main.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../Constants/Constants.dart';
 
-class GoogleSigninComplete extends StatefulWidget {
+class Google_UpdateProfileScreen extends StatefulWidget {
   @override
-  State<GoogleSigninComplete> createState() => _GoogleSigninCompleteState();
+  State<Google_UpdateProfileScreen> createState() =>
+      _Google_UpdateProfileScreenState();
 }
 
-class _GoogleSigninCompleteState extends State<GoogleSigninComplete> {
+class _Google_UpdateProfileScreenState
+    extends State<Google_UpdateProfileScreen> {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _name = TextEditingController();
-  final TextEditingController _email = TextEditingController();
-  final TextEditingController _password = TextEditingController();
+  final TextEditingController _dob = TextEditingController();
+  final TextEditingController _gender = TextEditingController();
   final TextEditingController _nickname = TextEditingController();
   late String _user;
-
-//! Google SignIn
-  Future signInbyGOOGLE() async {
-    GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-    if (googleUser == null) {
-      return log("NO");
-    }
-    final googleAuth = await googleUser.authentication;
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
-
-    DocumentSnapshot userExist = await _firestore
-        .collection("users")
-        .doc(userCredential.user!.uid)
-        .get();
-
-    if (userExist.exists) {
-      log("User already exists!😊");
-      // log(_firestore.collection("users").doc("name").get().toString());
-    } else {
-      await _firestore.collection("users").doc(userCredential.user!.uid).set({
-        "name": userCredential.user!.displayName,
-        "email": userCredential.user!.email,
-        "image": userCredential.user!.photoURL,
-        "uid": userCredential.user!.uid,
-        "date": DateTime.now(),
-      });
-    }
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => MyApp()), (route) => false);
-  }
+  late String _email;
+  late String _imageURL;
 
   @override
   Widget build(BuildContext context) {
@@ -67,11 +36,11 @@ class _GoogleSigninCompleteState extends State<GoogleSigninComplete> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                height: size.width / 1.5,
+                height: size.width / 1.3,
                 width: size.width,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                      image: AssetImage("assets/images/B2.png"),
+                      image: AssetImage("assets/images/B3.png"),
                       fit: BoxFit.cover),
                 ),
                 child: Stack(
@@ -80,9 +49,9 @@ class _GoogleSigninCompleteState extends State<GoogleSigninComplete> {
                     Container(
                       margin: EdgeInsets.only(
                           left: size.width / 5.87714,
-                          bottom: size.height / 11.85285),
+                          bottom: size.height / 5.85285),
                       child: const Text(
-                        "Hi",
+                        "Google",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 34,
@@ -90,9 +59,10 @@ class _GoogleSigninCompleteState extends State<GoogleSigninComplete> {
                       ),
                     ),
                     Container(
-                      margin: EdgeInsets.only(left: size.width / 5.87714),
+                      margin: EdgeInsets.only(
+                          left: size.width / 5.87714, bottom: size.height / 12),
                       child: const Text(
-                        "Setup",
+                        "Profile",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 34,
@@ -102,8 +72,8 @@ class _GoogleSigninCompleteState extends State<GoogleSigninComplete> {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 50,
+              SizedBox(
+                height: size.height / 20.97,
               ),
               SizedBox(
                 height: size.height / 13.82834,
@@ -156,7 +126,7 @@ class _GoogleSigninCompleteState extends State<GoogleSigninComplete> {
                 width: size.width / 1.17548,
                 child: TextFormField(
                   cursorColor: kSecondaryColor,
-                  controller: _email,
+                  controller: _dob,
                   decoration: const InputDecoration(
                     focusColor: kSecondaryColor,
                     labelStyle: TextStyle(color: kSecondaryColor),
@@ -179,8 +149,8 @@ class _GoogleSigninCompleteState extends State<GoogleSigninComplete> {
                 width: size.width / 1.17548,
                 child: TextFormField(
                   cursorColor: kSecondaryColor,
-                  // obscureText: true,
-                  controller: _password,
+                  obscureText: true,
+                  controller: _gender,
                   decoration: const InputDecoration(
                     focusColor: kSecondaryColor,
                     labelStyle: TextStyle(color: kSecondaryColor),
@@ -196,58 +166,61 @@ class _GoogleSigninCompleteState extends State<GoogleSigninComplete> {
                 ),
               ),
               SizedBox(
-                height: size.height / 10.7425,
+                height: size.height / 8.7425,
               ),
               //! new
               GestureDetector(
                 onTap: () async {
-                  // await FirebaseFirestore.instance
-                  //     .collection("users")
-                  //     .where("nickname", isEqualTo: _nickname.text)
-                  //     .get()
-                  //     .then((value) async {
-                  //   if (value.docs.isEmpty) {
-                  //     await FirebaseAuth.instance
-                  //         .createUserWithEmailAndPassword(
-                  //             email: _email.text, password: _password.text);
-                  //     FirebaseAuth.instance.authStateChanges().listen(
-                  //       (User? user) {
-                  //         if (user != null) {
-                  //           log(user.uid);
-                  //           _user = user.uid;
-                  //         }
-                  //       },
-                  //     );
-                  //     await FirebaseFirestore.instance
-                  //         .collection("users")
-                  //         .doc(_user)
-                  //         .set({
-                  //       "name": _name.text,
-                  //       "email": _email.text,
-                  //       "uid": _user,
-                  //       "date": DateTime.now(),
-                  //       "nickname": _nickname.text,
-                  //       "image":
-                  //           "https://media.istockphoto.com/vectors/default-profile-picture-avatar-photo-placeholder-vector-illustration-vector-id1223671392?k=20&m=1223671392&s=612x612&w=0&h=lGpj2vWAI3WUT1JeJWm1PRoHT3V15_1pdcTn2szdwQ0=",
-                  //     });
-                  //     log("work done");
-                  //     Navigator.push(
-                  //         context,
-                  //         MaterialPageRoute(
-                  //             builder: (context) => ProfilePicScreen()));
-                  //     return;
-                  //   } else {
-                  //     ScaffoldMessenger.of(context).showSnackBar(
-                  //       const SnackBar(
-                  //         content: Text("Nickname already taken."),
-                  //       ),
-                  //     );
-                  //   }
-                  // });
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ProfilePicScreen()));
+                  //?
+                  await FirebaseFirestore.instance
+                      .collection("users")
+                      .where("nickname", isEqualTo: _nickname.text)
+                      .get()
+                      .then((value) async {
+                    if (value.docs.isEmpty) {
+                      FirebaseAuth.instance.authStateChanges().listen(
+                        (User? user) {
+                          if (user != null) {
+                            log(user.uid);
+                            _user = user.uid;
+                            _email = user.email!;
+                            _imageURL = user.photoURL!;
+                          }
+                        },
+                      );
+                      await FirebaseFirestore.instance
+                          .collection("users")
+                          .doc(_user)
+                          .set({
+                        "name": _name.text,
+                        "date": DateTime.now(),
+                        "nickname": _nickname.text,
+                        "dob": _dob.text,
+                        "gender": _gender.text,
+                        "email": _email,
+                        "uid": _user,
+                        "image":
+                            "https://media.istockphoto.com/vectors/default-profile-picture-avatar-photo-placeholder-vector-illustration-vector-id1223671392?k=20&m=1223671392&s=612x612&w=0&h=lGpj2vWAI3WUT1JeJWm1PRoHT3V15_1pdcTn2szdwQ0=",
+                      });
+                      log("work done");
+                      // ignore: use_build_context_synchronously
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProfilePicScreen()));
+                      return;
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Nickname already taken."),
+                        ),
+                      );
+                    }
+                  });
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => ProfilePicScreen()));
                 },
                 child: Container(
                   height: size.height / 14,
@@ -266,7 +239,7 @@ class _GoogleSigninCompleteState extends State<GoogleSigninComplete> {
                 ),
               ),
               SizedBox(
-                height: size.height / 8.31334,
+                height: size.height / 55.31334,
               ),
               // Container(
               //   child: Row(
@@ -343,9 +316,9 @@ class _GoogleSigninCompleteState extends State<GoogleSigninComplete> {
               //     ),
               //   ),
               // ),
-              // SizedBox(
-              //   height: size.height / 21.47,
-              // ),
+              SizedBox(
+                height: size.height / 25.47,
+              ),
               //! old
               // ElevatedButton(
               //   onPressed: () async {
